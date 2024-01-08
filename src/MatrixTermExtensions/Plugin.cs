@@ -1,53 +1,49 @@
 ﻿using BepInEx.Logging;
-using MatrixTermExtensions.Commands;
-using TerminalAPI.Models;
+using LethalAPI.LibTerminal;
+using LethalAPI.LibTerminal.Models;
+using Matrix.TerminalExtensions.Commands;
+using Matrix.TerminalExtensions.Configs;
 
-namespace MatrixTermExtensions;
+namespace Matrix.TerminalExtensions;
 
 [BepInPlugin(GeneratedPluginInfo.Identifier, GeneratedPluginInfo.Name, GeneratedPluginInfo.Version)]
-[BepInDependency("Matrix.TerminalAPI", "1.0.0")]
 public class Plugin : BaseUnityPlugin
 {
-    internal static ManualLogSource Log = BepInEx.Logging.Logger.CreateLogSource(GeneratedPluginInfo.Name);
+    #nullable disable
+    
+    internal static new ManualLogSource Logger;
+    internal static new Config Config;
 
-    private TerminalModRegistry? _commands;
+#nullable enable
+
+    private readonly Harmony _harmony = new(GeneratedPluginInfo.Identifier);
+    private readonly TerminalModRegistry _commands = TerminalRegistry.CreateTerminalRegistry();
 
     public void Awake()
     {
-        Log.LogInfo("Registering Commands.");
-        _commands = TerminalRegistry.RegisterFromAssembly(typeof(Plugin).Assembly);
+        Logger = base.Logger;
+        Config = new(base.Config);
 
-        if (_commands is null || _commands.Commands is null || _commands.Commands.Count == 0)
+        try
         {
-            Log.LogError("Commands are not getting added!");
+            _harmony.PatchAll(typeof(Plugin).Assembly);
+            Logger.LogInfo($"<!!!> {GeneratedPluginInfo.Name} Plugin has loaded. <!!!>");
+
+            _commands.RegisterFrom<DoorCommands>();
+            _commands.RegisterFrom<TeleporterCommands>();
+            _commands.RegisterFrom<LightsCommands>();
+
+            if (Config.EnableCheatCommands)
+            {
+                Logger.LogInfo("Enabling Cheat Commands.");
+                _commands.RegisterFrom<CheatCommands>();
+            }
+
+            Logger.LogInfo($"<!!!> {GeneratedPluginInfo.Name} Custom Terminal Commands loaded. <!!!>");
         }
-
+        catch (Exception e)
+        {
+            Logger.LogError(e);
+        }
     }
-
-    //public void OnDestroy()
-    //{
-    //    if (DoorCommands.Deregister())
-    //    {
-    //        Log.LogInfo("Deregistered door commands.");
-    //    }
-
-    //    if (LaunchCommands.Deregister())
-    //    {
-    //        Log.LogInfo("Deregistered launch commands.");
-    //    }
-    //    if (LightsCommands.Deregister())
-    //    {
-    //        Log.LogInfo("Deregistered lighting commands.");
-    //    }
-
-    //    if (TeleporterCommands.Deregister())
-    //    {
-    //        Log.LogInfo("Deregistered teleporter commands.");
-    //    }
-
-    //    if (CheatCommands.Deregister())
-    //    {
-    //        Log.LogInfo("Deregistered the cheat commands.");
-    //    }
-    //}
 }
