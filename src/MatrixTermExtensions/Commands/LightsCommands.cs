@@ -1,55 +1,57 @@
-﻿using TerminalAPI.Attributes;
-using TerminalAPI.Models;
-using MatrixTermExtensions.Extensions;
-using UnityEngine;
+﻿using UnityEngine;
+using LethalAPI.LibTerminal.Attributes;
 
-namespace MatrixTermExtensions.Commands;
+namespace Matrix.TerminalExtensions.Commands;
 
 public class LightsCommands
 {
-    [TerminalCommand("Lightup")]
-    [CommandInfo("Turns the lights on.")]
+    [TerminalCommand("Lights", false)]
+    [CommandInfo("Turns the lights on or off.", "Lights [on/off]")]
+    public string SwitchLightsCommand([RemainingText] string subcommand)
+        => subcommand.ToLowerInvariant() switch
+        {
+            "on" or "up" => LightsOnCommand(),
+            "off" or "out" => LightsOffCommand(),
+            _ => "Invalid parameter!",
+        };
+
+    [TerminalCommand("Lightup", false)]
+    [CommandInfo("Turns the lights on, if not already on")]
     public string LightsOnCommand()
     {
-        if (StartOfRound.Instance.shipRoomLights.enabled) return "Lights already on.";
+        if (TrySwitchLights(switchOn: true))
+            return "Lights turned on.";
 
-        var trigger = GameObject.Find("LightSwitch").GetComponent<InteractTrigger>();
-        trigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
-
-        return "Lights turned on.";
+        return "Lights alredy on!";
     }
 
-    [TerminalCommand("Lumos")]
-    [CommandInfo("Turns the lights on.")]
-    public string LumosCommand() => LightsOnCommand();
-
-    [TerminalCommand("Lightsout")]
-    [CommandInfo("Turns the lights off.")]
-    public string LightsOutCommand()
+    [TerminalCommand("lightout", false)]
+    [CommandInfo("Turns the lights off, if not already off")]
+    public string LightsOffCommand()
     {
-        if (!StartOfRound.Instance.shipRoomLights.enabled) return "Lights already off.";
+        if (TrySwitchLights(switchOn: false))
+            return "Lights turned off.";
 
-        var trigger = GameObject.Find("LightSwitch").GetComponent<InteractTrigger>();
-        trigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
-
-        return "Lights turned off.";
+        return "Lights already off!";
     }
 
-    [TerminalCommand("Nox")]
-    [CommandInfo("Turns the lights off.")]
-    public string NoxCommand() => LightsOutCommand();
+    [TerminalCommand("Lightsout", false)]
+    [CommandInfo("Turns the lights off, if not already off")]
+    public string LightsOutCommand() => LightsOffCommand();
 
-    [TerminalCommand("lights")]
-    [CommandInfo("Turns the lights on or off.")]
-    public string LightsToggleCommand([RemainingText] string? subcommand)
+    private static bool TrySwitchLights(bool switchOn)
     {
-        if (subcommand.IsNullOrEmpty()) return "Invalid Command";
+        GameObject lightSwtich = GameObject.Find("LightSwitch");
 
-        return subcommand.ToLowerInvariant() switch
+        InteractTrigger lightSwitchTrigger = lightSwtich.GetComponent<InteractTrigger>();
+
+        if (StartOfRound.Instance.shipRoomLights.enabled == switchOn)
         {
-            "on" => LightsOnCommand(),
-            "off" or "out" => LightsOutCommand(),
-            _ => "Invalid Command.",
-        };
+            lightSwitchTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
+
+            return true;
+        }
+
+        return false;
     }
 }
