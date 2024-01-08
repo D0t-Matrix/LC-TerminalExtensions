@@ -1,56 +1,63 @@
-﻿using TerminalAPI.Attributes;
-using TerminalAPI.Models;
-using MatrixTermExtensions.Extensions;
+﻿using LethalAPI.LibTerminal.Attributes;
 using UnityEngine;
 
-namespace MatrixTermExtensions.Commands;
+namespace Matrix.TerminalExtensions.Commands;
 
 public class DoorCommands
 {
-
-    [TerminalCommand("Open")]
-    [CommandInfo("Opens the door.")]
-    public string OpenDoorCommand()
-    {
-        var trigger = GameObject.Find("StartButton").GetComponentInChildren<InteractTrigger>();
-        trigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
-
-        return "Opened door";
-    }
-
-    [TerminalCommand("Close")]
-    [CommandInfo("Closes the door.")]
-    public string CloseDoorCommand()
-    {
-        var trigger = GameObject.Find("StopButton").GetComponentInChildren<InteractTrigger>();
-        trigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
-
-        return "Closed door";
-    }
-
-    public string ToggleDoor()
-    {
-        var buttonName = StartOfRound.Instance.hangarDoorsClosed
-            ? "StartButton"
-            : "StopButton";
-        var trigger = GameObject.Find(buttonName).GetComponentInChildren<InteractTrigger>();
-        trigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
-
-        return "Toggled door.";
-    }
-    
-    [TerminalCommand("Door")]
-    [CommandInfo("Opens or closes the door.", "[Command]")]
-    public string DoorCommand([RemainingText] string? subcommand)
-    {
-        if (subcommand.IsNullOrEmpty()) return "Invalid Command.";
-
-        return subcommand.ToLowerInvariant() switch
+    [TerminalCommand("Door", false)]
+    [CommandInfo("Opens or closes the door", "Door [open/close]")]
+    public string DoorCommand([RemainingText] string subcommand)
+        => subcommand.ToLowerInvariant() switch
         {
-            "open" => OpenDoorCommand(),
-            "close" => CloseDoorCommand(),
-            "toggle" => ToggleDoor(),
-            _ => "Invalid Command.",
+            "open" => OpenCommand(),
+            "close" => CloseCommand(),
+            _ => "Invalid Parameter!",
         };
+
+    [TerminalCommand("Open", false)]
+    [CommandInfo("Opens doors, if not already open.")]
+    public string OpenCommand()
+    {
+        if (TryOpenDoors())
+            return "Doors Opened.";
+        return "Doors Already Open!";
+    }
+
+    [TerminalCommand("Close", false)]
+    [CommandInfo("Closes doors, if not already closed.")]
+    public string CloseCommand()
+    {
+        if (TryCloseDoors())
+            return "Doors Closed.";
+        return "Doors Already Closed!";
+    }
+
+    private static bool TryOpenDoors()
+    {
+        if (StartOfRound.Instance.hangarDoorsClosed)
+        {
+            InteractTrigger openTrigger = GameObject.Find("StartButton").GetComponentInChildren<InteractTrigger>();
+
+            openTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryCloseDoors()
+    {
+        if (!StartOfRound.Instance.hangarDoorsClosed)
+        {
+            InteractTrigger closeTrigger = GameObject.Find("StopButton").GetComponentInChildren<InteractTrigger>();
+
+            closeTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
+
+            return true;
+        }
+
+        return false;
     }
 }

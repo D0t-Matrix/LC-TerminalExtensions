@@ -1,57 +1,50 @@
-﻿using TerminalAPI.Attributes;
-using TerminalAPI.Models;
+﻿using LethalAPI.LibTerminal.Attributes;
 using UnityEngine;
 
-namespace MatrixTermExtensions.Commands;
+namespace Matrix.TerminalExtensions.Commands;
 
 public class LaunchCommands
 {
+    const string alreadyInTransitMsg = "Unable to comply. Ship is alredy in tranist.";
 
-    const string AlreadyInTransitMessage = "Unable to comply as the ship is already in transit.";
-
-    [TerminalCommand("Launch")]
-    [CommandInfo("ooh, what does this lever do?")]
+    [TerminalCommand("Launch", false)]
+    [CommandInfo("Pull the lever, Kronk!")]
     public string LaunchCommand()
     {
-        var leverObject = GameObject.Find("StartGameLever");
-        if (leverObject is null) return "!! Can't find StartGameLever component !!";
+        GameObject leverObject = GameObject.Find("StartGameLever");
+        if (leverObject is null) return "<!!!> Can't find StartGameLever <!!!>";
 
-        var lever = leverObject.GetComponent<StartMatchLever>();
-        if (lever is null) return "!! Can't find StartMatchLever component !!";
+        StartMatchLever lever = leverObject.GetComponent<StartMatchLever>();
+        if (lever is null) return "<!!!> Can't find StartMatchLever Component <!!!>";
 
-        //! Doors are enabled (on a moon), and the ship is either leaving or not landed
-        if (StartOfRound.Instance.shipDoorsEnabled &&
-            !(StartOfRound.Instance.shipHasLanded
+        //! Doors are enabled (on a moon), and ship is either not landed or already leaving
+        if (StartOfRound.Instance.shipDoorsEnabled
+            && !(StartOfRound.Instance.shipHasLanded
                 || StartOfRound.Instance.shipIsLeaving))
         {
-            return AlreadyInTransitMessage;
+            return alreadyInTransitMsg;
         }
 
-        //! Doors are disabled (in space), and the ship is in transit to another moon
+        //! Doors are disabled (in space), and ship is in transit to another moon.
         if (!StartOfRound.Instance.shipDoorsEnabled
             && StartOfRound.Instance.travellingToNewLevel)
         {
-            return AlreadyInTransitMessage;
+            return alreadyInTransitMsg;
         }
 
-        var newState = !lever.leverHasBeenPulled;
+        bool newState = !lever.leverHasBeenPulled;
         lever.PullLever();
         lever.LeverAnimation();
-        if (newState)
-        {
-            lever.StartGame();
-        }
-        else
-        {
-            lever.EndGame();
-        }
 
-        var sequenceName = lever.leverHasBeenPulled ? "landing" : "launch";
-        return $"Initiating {sequenceName} sequence.";
+        if (newState)
+            lever.StartGame();
+        else
+            lever.EndGame();
+
+        return "Initiating " + (lever.leverHasBeenPulled ? "landing" : "launch") + " sequence.";
     }
 
-    [TerminalCommand("Go")]
-    [CommandInfo("ooh, what does this lever do?")]
+    [TerminalCommand("Go", false)]
+    [CommandInfo("Pull the lever, Kronk!")]
     public string GoCommand() => LaunchCommand();
-
 }
