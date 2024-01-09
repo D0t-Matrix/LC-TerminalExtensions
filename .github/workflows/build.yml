@@ -25,7 +25,7 @@ jobs:
 
       - name: Restore Solution
         run: |
-          dotnet restore
+          dotnet restore -v diag
 
       - name: Build Solution
         run: |
