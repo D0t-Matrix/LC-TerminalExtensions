@@ -1,0 +1,52 @@
+name: Build
+
+on: 
+  # Trigger the worfklow on pushes to only the 'main' branch
+  push:
+    branches:
+      - main
+  # Trigger the workflow on any PR
+  pull_request:
+
+env:
+  DOTNET_NOLOGO: true
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+  PLUGIN_SDK_CACHE: ${{ github.workspace }}/.plugins/cache
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup .NET Enviornment
+        uses: actions/setup-dotnet@v4
+        with:
+          cache: true
+          cache-dependency-path: ./**/packages.lock.json
+          global-json-file: global.json
+
+      - name: Cache Plugins
+        uses: actions/cache@v3
+        with:
+          key: plugin-cache-${{ runner.os }}-${{ hashFiles('**/plugins.lock.json') }}
+          path: ${{ env.PLUGIN_SDK_CACHE }}
+          restore-keys: |
+            plugin-cache-${{ runner.os }}-
+
+      - name: Restore Solution
+        run: |
+          dotnet restore --locked-mode
+
+      - name: Publish
+        run: dotnet publish -c Release -o .package --no-restore
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MatrixTermExtensions
+          path: .package

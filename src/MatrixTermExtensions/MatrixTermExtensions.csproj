@@ -1,4 +1,4 @@
-﻿<Project Sdk="LethalCompany.Plugin.Sdk/1.1.0-rc.9">
+﻿<Project Sdk="LethalCompany.Plugin.Sdk">
     <PropertyGroup>
         <Title>MatrixTermExtensions</Title>
         <Description>A customized variant of Terminal Extensions for use in sessions with my friends.</Description>
@@ -7,9 +7,12 @@
 		<RootNamespace>Matrix.TerminalExtensions</RootNamespace>
         <Version>1.1.0</Version>
 		<RepositoryUrl>https://github.com/D0t-Matrix/LC-TermExtensions</RepositoryUrl>
+        <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestorePluginsWithLockFile>true</RestorePluginsWithLockFile>
     </PropertyGroup>
 
 	<ItemGroup>
-		<ThunderDependency Include="LethalAPI-LethalAPI_Terminal-1.0.0" />
+		<ThunderDependency Include="LethalAPI-LethalAPI_Terminal" Version="1.0.0" />
 	</ItemGroup>
 </Project>
