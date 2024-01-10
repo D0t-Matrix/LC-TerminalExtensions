@@ -7,26 +7,45 @@ on:
   # Trigger the workflow on any PR
   pull_request:
 
+env:
+  DOTNET_NOLOGO: true
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+  PLUGIN_SDK_CACHE: ${{ github.workspace }}/.plugins/cache
+
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Fetch Sources
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          filter: tree:0
+          submodules: true
       
       - name: Setup .NET environment
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "8.0.100"
+          cache: true
+          cache-dependency-path: ./**/packages.lock.json
+          global-json-file: global.json
+
+      - name: Cache Plugins
+        uses: actions/cache@v3
+        with:
+          key: plugin-cache-${{ runner.os }}-${{ hashFiles('**/plugins.lock.json') }}
+          path: ${{ env.PLUGIN_SDK_CACHE }}
+          restore-keys: |
+            plugin-cache-${{ runner.os }}-
 
       - name: Restore Solution
         run: |
-          dotnet restore 
+          dotnet restore --locked-mode
 
-      - name: Build Solution
-        run: |
-          dotnet build
+      - name: Publish
+        run: dotnet publish -c Release -o .package --no-restore
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MatrixTermExtensions
+          path: .package
