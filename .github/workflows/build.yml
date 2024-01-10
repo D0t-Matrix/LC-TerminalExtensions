@@ -25,7 +25,7 @@ jobs:
 
       - name: Restore Solution
         run: |
-          dotnet restore -v diag -p:RestoreBuildInParallel="false"
+          dotnet restore -p:RestoreBuildInParallel="false"
 
       - name: Build Solution
         run: |
