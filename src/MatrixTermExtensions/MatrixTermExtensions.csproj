@@ -9,6 +9,7 @@
 		<RepositoryUrl>https://github.com/D0t-Matrix/LC-TermExtensions</RepositoryUrl>
         <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestorePluginsWithLockFile>true</RestorePluginsWithLockFile>
     </PropertyGroup>
 
 	<ItemGroup>
