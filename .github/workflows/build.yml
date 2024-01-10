@@ -3,7 +3,8 @@ name: Build
 on: 
   # Trigger the worfklow on pushes to only the 'main' branch
   push:
-    branches: [ main ]
+    branches:
+      - main
   # Trigger the workflow on any PR
   pull_request:
 
@@ -23,7 +24,7 @@ jobs:
           submodules: true
       
       - name: Setup .NET environment
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           cache: true
           cache-dependency-path: ./**/packages.lock.json
