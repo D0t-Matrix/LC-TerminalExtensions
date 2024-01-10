@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Fetch Sources
         uses: actions/checkout@v4
@@ -22,11 +22,6 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "8.0.100"
-      
-      - name: tree workdir
-        run: |
-          sudo apt-get install tree
-          tree .
 
       - name: Restore Solution
         run: |
