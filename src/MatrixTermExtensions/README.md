@@ -1,4 +1,3 @@
-# LC-TerminalExtensions
 This mod is a variant of [ANormalTwig](https://thunderstore.io/c/lethal-company/p/anormaltwig/)'s [TerminalExtras](https://thunderstore.io/c/lethal-company/p/anormaltwig/TerminalExtras/) mod, replacing the door toggle with explicit open/close commands.
 
 Made primarily for my friend group, and for personal coding practice.

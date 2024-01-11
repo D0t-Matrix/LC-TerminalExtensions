@@ -8,8 +8,8 @@
     },
     "LethalAPI-LethalAPI_Terminal": {
       "type": "Direct",
-      "requested": "1.0.0",
-      "resolved": "1.0.0",
+      "requested": "1.0.1",
+      "resolved": "1.0.1",
       "dependencies": {
         "BepInEx-BepInExPack": "5.4.2100"
       }
