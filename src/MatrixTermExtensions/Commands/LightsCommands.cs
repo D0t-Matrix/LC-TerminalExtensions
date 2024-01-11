@@ -5,6 +5,13 @@ namespace Matrix.TerminalExtensions.Commands;
 
 public class LightsCommands
 {
+    const string LightsTurnedOn = "Turning lights on.";
+    const string LightsTurnedOff = "Turning lights off.";
+    const string LightsDisabled = "Unable to switch lights, as they are disabled.";
+    const string LightsAlreadyOn = "Lights are already on!";
+    const string LightsAlreadyOff = "Lights are already off!";
+    const string ParameterError = "Invalid Parameter.";
+
     [TerminalCommand("Lights", false)]
     [CommandInfo("Turns the lights on or off.", "Lights [on/off]")]
     public string SwitchLightsCommand([RemainingText] string subcommand)
@@ -12,46 +19,59 @@ public class LightsCommands
         {
             "on" or "up" => LightsOnCommand(),
             "off" or "out" => LightsOffCommand(),
-            _ => "Invalid parameter!",
+            _ => ParameterError,
         };
 
     [TerminalCommand("Lightup", false)]
     [CommandInfo("Turns the lights on, if not already on")]
     public string LightsOnCommand()
     {
-        if (TrySwitchLights(switchOn: true))
-            return "Lights turned on.";
-
-        return "Lights alredy on!";
+        return TrySwitchLights(true);
     }
 
     [TerminalCommand("lightout", false)]
     [CommandInfo("Turns the lights off, if not already off")]
     public string LightsOffCommand()
     {
-        if (TrySwitchLights(switchOn: false))
-            return "Lights turned off.";
-
-        return "Lights already off!";
+        return TrySwitchLights(false);
     }
 
     [TerminalCommand("Lightsout", false)]
     [CommandInfo("Turns the lights off, if not already off")]
     public string LightsOutCommand() => LightsOffCommand();
 
-    private static bool TrySwitchLights(bool switchOn)
+    private static string TrySwitchLights(bool switchOn)
     {
-        GameObject lightSwtich = GameObject.Find("LightSwitch");
-
-        InteractTrigger lightSwitchTrigger = lightSwtich.GetComponent<InteractTrigger>();
-
-        if (StartOfRound.Instance.shipRoomLights.enabled == switchOn)
+        if (!StartOfRound.Instance.shipRoomLights.enabled)
         {
-            lightSwitchTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
-
-            return true;
+            return LightsDisabled;
         }
 
-        return false;
+        InteractTrigger lightSwitchTrigger = GameObject.Find("LightSwitch").GetComponent<InteractTrigger>();
+
+        if (switchOn)
+        {
+            if (!StartOfRound.Instance.shipRoomLights.areLightsOn)
+            {
+                lightSwitchTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
+                return LightsTurnedOn;
+            }
+            else
+            {
+                return LightsAlreadyOn;
+            }
+        }
+        else
+        {
+            if (StartOfRound.Instance.shipRoomLights.areLightsOn)
+            {
+                lightSwitchTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
+                return LightsTurnedOff;
+            }
+            else
+            {
+                return LightsAlreadyOff;
+            }
+        }
     }
 }

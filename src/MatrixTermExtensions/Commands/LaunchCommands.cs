@@ -5,17 +5,28 @@ namespace Matrix.TerminalExtensions.Commands;
 
 public class LaunchCommands
 {
+    #region Strings
+
+    const string StartGameLever = "StartGameLever";
     const string alreadyInTransitMsg = "Unable to comply. Ship is alredy in tranist.";
+    const string CantFindStartLever = "<!!!> Can't find StartGameLever <!!!>";
+    const string CantFindStartComponent = "<!!!> Can't find StartMatchLever Component <!!!>";
+    const string InitiatingLaunch = "Initiating launch sequence.";
+    const string InitiatingLanding = "Initiating landing sequence.";
+
+    #endregion
+
+    #region Commands
 
     [TerminalCommand("Launch", false)]
     [CommandInfo("Pull the lever, Kronk!")]
     public string LaunchCommand()
     {
-        GameObject leverObject = GameObject.Find("StartGameLever");
-        if (leverObject is null) return "<!!!> Can't find StartGameLever <!!!>";
+        GameObject leverObject = GameObject.Find(StartGameLever);
+        if (leverObject is null) return CantFindStartLever;
 
         StartMatchLever lever = leverObject.GetComponent<StartMatchLever>();
-        if (lever is null) return "<!!!> Can't find StartMatchLever Component <!!!>";
+        if (lever is null) return CantFindStartComponent;
 
         //! Doors are enabled (on a moon), and ship is either not landed or already leaving
         if (StartOfRound.Instance.shipDoorsEnabled
@@ -41,10 +52,14 @@ public class LaunchCommands
         else
             lever.EndGame();
 
-        return "Initiating " + (lever.leverHasBeenPulled ? "landing" : "launch") + " sequence.";
+        return lever.leverHasBeenPulled 
+            ? InitiatingLanding
+            : InitiatingLaunch;
     }
 
     [TerminalCommand("Go", false)]
     [CommandInfo("Pull the lever, Kronk!")]
     public string GoCommand() => LaunchCommand();
+
+    #endregion
 }
