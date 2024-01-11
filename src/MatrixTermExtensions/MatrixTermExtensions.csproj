@@ -15,4 +15,10 @@
 	<ItemGroup>
 		<ThunderDependency Include="LethalAPI-LethalAPI_Terminal" Version="1.0.1" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="CHANGELOG.md">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 </Project>
