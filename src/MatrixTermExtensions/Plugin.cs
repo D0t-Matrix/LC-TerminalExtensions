@@ -32,6 +32,7 @@ public class Plugin : BaseUnityPlugin
             _commands.RegisterFrom<DoorCommands>();
             _commands.RegisterFrom<TeleporterCommands>();
             _commands.RegisterFrom<LightsCommands>();
+            _commands.RegisterFrom<LaunchCommands>();
 
             if (Config.EnableCheatCommands)
             {
