@@ -33,7 +33,7 @@ public class TeleporterCommands
 
         if (!teleporter.buttonTrigger.interactable)
         {
-            var cooldown = (int)Utils.GetInstancedStructField<float>(teleporter, TeleporterCooldownFieldName);
+            var cooldown = (int)Utils.GetInstancedStructField<float>(teleporter, nameof(ShipTeleporter.cooldownTime));
 
             return string.Format(TeleporterCooldown, cooldown);
         }
@@ -54,7 +54,7 @@ public class TeleporterCommands
 
         if (!inverseTeleporter.buttonTrigger.interactable)
         {
-            var cooldown = (int)Utils.GetInstancedStructField<float>(inverseTeleporter, TeleporterCooldownFieldName);
+            var cooldown = (int)Utils.GetInstancedStructField<float>(inverseTeleporter, nameof(ShipTeleporter.cooldownTime));
 
             return string.Format(InverseTeleporterCooldown, cooldown);
         }
@@ -70,6 +70,7 @@ public class TeleporterCommands
     [TerminalCommand("itp", false)]
     [CommandInfo("Activates the Inverse Teleporter.")]
     public string ItpCommand() => InverseTeleportCommand();
+
     #endregion
 
     #region Helper Methods
@@ -112,13 +113,20 @@ public class TeleporterCommands
         }
         
 
-        teleporter.cooldownTime= 0;
+        Plugin.Logger.LogInfo("Inverse Teleporter loaded. Resetting cooldown");
+
+        Utils.SetInstancedStructField(teleporter, nameof(ShipTeleporter.cooldownTime), 0f);
         teleporter.enabled = true;
 
         teleporter.buttonTrigger.cooldownTime = 0;
         teleporter.buttonTrigger.interactable = true;
 
+        var cooldown = (int)Utils.GetInstancedStructField<float>(teleporter, nameof(ShipTeleporter.cooldownTime));
+
+        Plugin.Logger.LogInfo(string.Format(InverseTeleporterCooldown, cooldown));
+
         return true;
     }
+
     #endregion
 }

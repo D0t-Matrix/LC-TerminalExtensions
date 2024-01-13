@@ -9,6 +9,7 @@ internal sealed class LevelPatches
     [HarmonyPatch(nameof(RoundManager.LoadNewLevel))]
     static void LoadNewLevel()
     {
+        Plugin.Logger.LogInfo("Resetting the Inverse Teleporter Cooldown");
         TeleporterCommands.TryResetInverseTeleporter();
     }
 }
