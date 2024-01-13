@@ -17,7 +17,6 @@ public class LightsCommands
     public string SwitchLightsCommand() => TrySwitchLights(LightState.Toggle);
 
     [TerminalCommand("Lightup", false)]
-    [CommandInfo("Turns the lights on, if not already on")]
     public string LightsOnCommand() => TrySwitchLights(LightState.On);
 
     [TerminalCommand("lightout", false)]
@@ -25,7 +24,6 @@ public class LightsCommands
     public string LightsOffCommand() => TrySwitchLights(LightState.Off);
 
     [TerminalCommand("nox", false)]
-    [CommandInfo("Turns the lights off, if not already off")]
     public string NoxCommand() => LightsOffCommand();
 
     [TerminalCommand("lumos", false)]

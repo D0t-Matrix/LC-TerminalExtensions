@@ -23,8 +23,7 @@ public class DoorCommands
 
     #region Commands
 
-    [TerminalCommand("Door", false)]
-    [CommandInfo("Opens or closes the door", "Door [open/close]")]
+    [TerminalCommand("Doors", false)]
     public string DoorCommand([RemainingText] string? subcommand)
         => subcommand?.ToLowerInvariant() switch
         {
@@ -34,8 +33,8 @@ public class DoorCommands
             _ => InvalidParameter,
         };
 
-    [TerminalCommand("Doors", false)]
-    [CommandInfo("Opens or closes the door", "Doors [open/close]")]
+    [TerminalCommand("Door", false)]
+    [CommandInfo("Opens or closes the door", "[open/close]")]
     public string DoorsCommand([RemainingText] string? subcommand)
         => subcommand?.ToLowerInvariant() switch
         {

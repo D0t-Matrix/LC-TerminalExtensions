@@ -18,7 +18,6 @@ public class CheatCommands
     #region Commands
 
     [TerminalCommand("GiveMoney", true)]
-    [CommandInfo("Adds specified amount of money to shop balance.", "GiveMoney [value]")]
     public string GiveMoneyCommand(Terminal terminal, int amount)
     {
         terminal.groupCredits += amount;
@@ -27,7 +26,6 @@ public class CheatCommands
     }
 
     [TerminalCommand("SpawnLoot", true)]
-    [CommandInfo("Spawns a random amount of loot, with the specified value at your feet.", "SpawnLoot [amount] [value]")]
     public string SpawnLootCommand(int amount, int value)
     {
         var randIndex = RoundManager.Instance.LevelRandom.Next(RoundManager.Instance.currentLevel.spawnableScrap.Count);
@@ -52,7 +50,6 @@ public class CheatCommands
     }
 
     [TerminalCommand("ResetInverse", false)]
-    [CommandInfo("Resets the inverse teleporter cooldown")]
     public string ResetInverseTeleporterCooldownCommand()
     {
         if (TeleporterCommands.TryResetInverseTeleporter())

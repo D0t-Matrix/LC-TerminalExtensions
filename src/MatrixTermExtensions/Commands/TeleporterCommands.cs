@@ -9,7 +9,6 @@ public class TeleporterCommands
 {
     #region strings
 
-    const string TeleporterCooldownFieldName = "cooldownTime";
     const string TeleporterObjectName = "Teleporter(Clone)";
     const string InverseTeleporterObjectName = "InverseTeleporter(Clone)";
     const string TeleporterCooldown = "Teleporter is on cooldown, {0:D} seconds left!";
@@ -25,7 +24,6 @@ public class TeleporterCommands
 
     #region Commands
     [TerminalCommand("Teleport", false)]
-    [CommandInfo("Activates teleporter.")]
     public string TeleportCommand()
     {
         if (!TryGetTeleporter(out var teleporter, out var errorMessage, isInverted: false))
@@ -43,7 +41,6 @@ public class TeleporterCommands
     }
 
     [TerminalCommand("iTeleport", false)]
-    [CommandInfo("Activates Inverse Teleporter.")]
     public string InverseTeleportCommand()
     {
         if (!StartOfRound.Instance.shipDoorsEnabled)
