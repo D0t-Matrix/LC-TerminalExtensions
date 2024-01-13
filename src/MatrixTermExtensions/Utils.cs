@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 
 namespace Matrix.TerminalExtensions;
 
@@ -20,6 +17,13 @@ internal static class Utils
         const BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
         FieldInfo field = instance.GetType().GetField(fieldName, bindFlags);
         return field.GetValue(instance) is T result ? result : default;
+    }
+
+    internal static void SetInstancedStructField<T>(object instance, string fieldName, T value) where T : struct
+    {
+        const BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+        FieldInfo field = instance.GetType().GetField(fieldName, bindFlags);
+        field.SetValue(instance, value);
     }
 
     /// <summary>
