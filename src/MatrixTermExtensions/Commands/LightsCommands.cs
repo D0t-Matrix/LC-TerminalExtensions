@@ -13,34 +13,26 @@ public class LightsCommands
     const string ParameterError = "Invalid Parameter.";
 
     [TerminalCommand("Lights", false)]
-    [CommandInfo("Turns the lights on or off.", "Lights [on/off]")]
-    public string SwitchLightsCommand([RemainingText] string subcommand)
-        => subcommand.ToLowerInvariant() switch
-        {
-            "on" or "up" => LightsOnCommand(),
-            "off" or "out" => LightsOffCommand(),
-            _ => ParameterError,
-        };
+    [CommandInfo("Toggles the lights on or off")]
+    public string SwitchLightsCommand() => TrySwitchLights(LightState.Toggle);
 
     [TerminalCommand("Lightup", false)]
     [CommandInfo("Turns the lights on, if not already on")]
-    public string LightsOnCommand()
-    {
-        return TrySwitchLights(true);
-    }
+    public string LightsOnCommand() => TrySwitchLights(LightState.On);
 
     [TerminalCommand("lightout", false)]
     [CommandInfo("Turns the lights off, if not already off")]
-    public string LightsOffCommand()
-    {
-        return TrySwitchLights(false);
-    }
+    public string LightsOffCommand() => TrySwitchLights(LightState.Off);
 
-    [TerminalCommand("Lightsout", false)]
+    [TerminalCommand("nox", false)]
     [CommandInfo("Turns the lights off, if not already off")]
-    public string LightsOutCommand() => LightsOffCommand();
+    public string NoxCommand() => LightsOffCommand();
 
-    private static string TrySwitchLights(bool switchOn)
+    [TerminalCommand("lumos", false)]
+    [CommandInfo("Turns the lights off, if not already off")]
+    public string LumosCommand() => LightsOnCommand();
+
+    private static string TrySwitchLights(LightState switchState)
     {
         if (!StartOfRound.Instance.shipRoomLights.enabled)
         {
@@ -49,29 +41,46 @@ public class LightsCommands
 
         InteractTrigger lightSwitchTrigger = GameObject.Find("LightSwitch").GetComponent<InteractTrigger>();
 
-        if (switchOn)
+
+        switch (switchState)
         {
-            if (!StartOfRound.Instance.shipRoomLights.areLightsOn)
-            {
+            case LightState.Off:
+                if (StartOfRound.Instance.shipRoomLights.areLightsOn)
+                {
+                    lightSwitchTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
+                    return LightsTurnedOff;
+                }
+                else
+                {
+                    return LightsAlreadyOff;
+                }
+            case LightState.On:
+                if (!StartOfRound.Instance.shipRoomLights.areLightsOn)
+                {
+                    lightSwitchTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
+                    return LightsTurnedOn;
+                }
+                else
+                {
+                    return LightsAlreadyOn;
+                }
+            case LightState.Toggle:
                 lightSwitchTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
-                return LightsTurnedOn;
-            }
-            else
-            {
-                return LightsAlreadyOn;
-            }
-        }
-        else
-        {
-            if (StartOfRound.Instance.shipRoomLights.areLightsOn)
-            {
-                lightSwitchTrigger.onInteract.Invoke(GameNetworkManager.Instance.localPlayerController);
-                return LightsTurnedOff;
-            }
-            else
-            {
-                return LightsAlreadyOff;
-            }
+
+                return StartOfRound.Instance.shipRoomLights.areLightsOn
+                   ? LightsTurnedOn
+                   : LightsTurnedOff;
+            default:
+                return ParameterError;
+
         }
     }
+    private enum LightState
+    {
+        On,
+        Off,
+        Toggle
+    }
 }
+
+

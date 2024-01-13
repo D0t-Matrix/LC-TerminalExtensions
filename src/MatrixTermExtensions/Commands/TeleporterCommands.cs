@@ -24,7 +24,7 @@ public class TeleporterCommands
     #endregion
 
     #region Commands
-    [TerminalCommand("teleport", false)]
+    [TerminalCommand("Teleport", false)]
     [CommandInfo("Activates teleporter.")]
     public string TeleportCommand()
     {
@@ -42,7 +42,7 @@ public class TeleporterCommands
         return TeleportingPlayer;
     }
 
-    [TerminalCommand("inverse", false)]
+    [TerminalCommand("iTeleport", false)]
     [CommandInfo("Activates Inverse Teleporter.")]
     public string InverseTeleportCommand()
     {
@@ -110,8 +110,12 @@ public class TeleporterCommands
 
             return false;
         }
+        
 
-        teleporter.buttonTrigger.currentCooldownValue = 0;
+        teleporter.cooldownTime= 0;
+        teleporter.enabled = true;
+
+        teleporter.buttonTrigger.cooldownTime = 0;
         teleporter.buttonTrigger.interactable = true;
 
         return true;
